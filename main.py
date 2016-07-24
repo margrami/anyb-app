@@ -61,6 +61,7 @@ def format_string(mystring):
 
 def format_string_num(mystring):
     new_string = mystring.replace(" ", "")
+    new_string = new_string.replace("-", "")
     return new_string
 
 

@@ -19,6 +19,7 @@ h1,h2,h3,h4,label.lead,.btn,.navbar a {
   text-transform:uppercase;
   font-family:'Voltaire',Arial,sans-serif;
   letter-spacing:2px;
+
 }
 
 
@@ -124,7 +125,7 @@ img.grayscale {
 }
 
 .alt .lead {
-  color: #3B0496;
+  color: #fff;
 }
 
 .alt.affix {
