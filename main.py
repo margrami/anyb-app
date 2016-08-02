@@ -53,16 +53,32 @@ letters_dic = {'A':1, 'B':2, 'C':3, 'D':4, 'E':5, 'F':6, 'G':7, 'H':8, 'I':9,
                    'S':1, 'T':2, 'U':3, 'V':4, 'W':5, 'X':6, 'Y':7, 'Z':8,
                    '1':1, '2':2, '3':3, '4':4, '5':5, '6':6, '7':7, '8':8, '9':9, '0':0}
 
-def format_string(mystring):
-    new_string = mystring.upper()
-    new_string = new_string.replace(" ", "")
-    new_string = new_string.replace("-", "")
-    return new_string
+
+
+'''def format_string(mystring):
+    mystring = mystring.upper()
+    mystring = mystring.replace("'" , "")
+    items = '?!&@$:%+=#.,/-()[]_;~ '
+    for char in items:
+        mystring= mystring.replace(char, "")
+    return  mystring
+
 
 def format_string_num(mystring):
-    new_string = mystring.replace(" ", "")
-    new_string = new_string.replace("-", "")
-    return new_string
+    items = '?!&@$:%+=#.,/-()[]_;~ '
+    for char in items:
+        mystring= mystring.replace(char, "")
+    return  mystring
+'''
+
+def format_string(mystring):
+    mystring = mystring.upper()
+    mystring = ''.join(re.findall('[A-Z]+', mystring))
+    return mystring
+
+def format_string_num(mystring):
+    mystring = ''.join(re.findall('[0-9]+', mystring))
+    return mystring
 
 
 def result_text(mylist):
@@ -112,16 +128,19 @@ class MainDisplay(BaseHandler):
     def post(self):
         text = self.request.get('name')
         num = self.request.get('number')
-        listaStringName = list(format_string(text))
-        frecuencyName, nameNumbersList = result_text(listaStringName)
-        listaStringNum = list(format_string_num(num))
-        frecuencyNum, numNumbersList = result_text(listaStringNum)
-        #numberList = result_number(listaStringNum) no se si se va a usar, la salida es un dict
-        resultName = suma_digits(nameNumbersList) 
-        resultNum = suma_digits(numNumbersList)
+        try:
+            listaStringName = list(format_string(text))
+            frecuencyName, nameNumbersList = result_text(listaStringName)
+            listaStringNum = list(format_string_num(num))
+            frecuencyNum, numNumbersList = result_text(listaStringNum)
+            resultName = suma_digits(nameNumbersList) 
+            resultNum = suma_digits(numNumbersList)
 
-    	self.render('welcome.html', sum_name = str(resultName), sum_brnum = str(resultNum),
-                    name_list_num = str(nameNumbersList), frec_num = str(frecuencyName), test_dict = frecuencyName, num_dict = frecuencyNum, name = text, number = num )
+    	    self.render('welcome.html', sum_name = str(resultName), sum_brnum = str(resultNum),
+                        name_list_num = str(nameNumbersList), frec_num = str(frecuencyName), test_dict = frecuencyName, num_dict = frecuencyNum, name = text, number = num )
+        except:
+            self.render('error.html', name = text, number = num )
+
 
 
         #self.render('index.html', sum_name = str(resultName), sum_brnum = str(resultNum),
