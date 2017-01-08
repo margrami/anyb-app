@@ -1,0 +1,66 @@
+
+{% extends "index1.html" %}
+{% block content %} 
+
+<div class="panel panel-default">
+                  <div class="panel-heading"><h4>Anybus Device Info</h4><span class="badge pull-right"></span>
+                  </div>
+                  <div class="panel-body">
+
+
+                    <dl class="dl-horizontal">
+
+                         {% for key, value in over_outcome.iteritems() %}
+                          <dt>{{ key }}  <dd>{{ value }}</dd></dt> 
+                         {% endfor %}
+                        
+        
+
+                  </div><!--/panel-body-->
+              </div><!--/panel-->      
+              
+              <hr>
+
+            <div class="panel panel-primary">
+                  <div class="panel-heading"><h4>Update Request </h4></div>
+                  <div class="panel-body">
+                    <form  role="form" method="post">
+                       <div class="form-group">
+                        <label class="lead"  for="text">Instance:</label>
+                         <input type="text" class="form-control" placeholder="Enter Instance" name="inst" value="{{inst}}">
+                        </div>
+                       <div class="form-group">
+                          <label class="lead" for="text">Value:</label>
+                           <input type="text" class="form-control" placeholder="Enter Value" name="val" value="{{val}}">
+                      </div>
+                      <button type="submit" class="btn btn-primary btn-lg"> Submit </button>
+                   </form>
+                  </div><!--/panel-body-->
+                  <div class="panel-footer"><h6>Last Request: {{last_request}} </h6>
+                  <h6>Error : {{up_outcome}}</h6> 
+                  <h6> dirrection : {{dirr}}
+                  </div>
+            
+           
+              </div><!--/panel-->                     
+
+
+              
+          	</div><!--/col-->
+         
+            <!--center-right-->
+        	<div class="col-md-7">
+           <div class="panel panel-success">
+                  <div class="panel-heading"><h4>ADI Status</h4></div>
+                  
+                  <div class="panel-body" id="responsecontainer">
+
+                  <div class="table-responsive">  
+                 
+                    
+                  </div><!-- table responsible-->
+                  </div><!--/panel-body-->
+                  
+              </div><!--/panel-->               
+
+{% endblock %}

@@ -1,0 +1,34 @@
+Hi outlaw 
+
+If you want just a common constant, you may 
+add python module like properties.py: 
+... 
+FOO = 'bar' 
+... 
+
+and then at the place your handlers defined do 
+
+from properties import FOO 
+
+-------- 
+but if you want, as Philip said, to pass some variable between 
+requests, 
+you have 2 options 
+a) Pass it to user side with response from one handler, 
+   and then get it from request inside another handler - 
+   This may be achieved by: 
+   a1) What Philip has proposed - hidden form field, but then you 
+should use post() 
+   a2) via cookies 
+b)You may put the value into memcache, or datastore 
+memcache is not reliable though, it may be suddenly cleaned up in 
+hours or even minutes. 
+
+you may NOT use global variables between requests at all (probably you 
+are aware of this already) 
+because request handlers may be located inside different App Engine 
+instances, 
+this is not scalable. 
+
+Best regards, 
+Denis 

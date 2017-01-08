@@ -1,0 +1,11 @@
+
+# como desplegar en jinja un diccionario
+
+<table class="table">
+       {% for key, value in ADI_dict.iteritems() %}
+       <tr>
+        <th> {{ key }} </th>
+        <td> {{ value }} </td>
+       </tr>
+       {% endfor %}
+      </table>

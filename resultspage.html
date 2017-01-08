@@ -1,0 +1,28 @@
+
+   <table class="table">
+                      <thead>
+                      <tr id= "row">
+                        <th>Instance</th>
+                        <th>Name</th>
+                        <th>Datatype</th>
+                        <th>Access</th>
+                        <th>Value</th>
+                      </tr>
+                      </thead>
+                      <tbody>
+                      {% for key, value in ADI_dict.iteritems() %}
+                      <tr>
+                         <!--th> {{ key }} </th -->
+                         <td> {{ value[0] }}</td>
+                         <td> {{ value[1] }}</td>
+                         <td> {{ value[2] }}</td>
+                         <td> {{ value[3] }}</td>
+                         <td> {{ value[4] }}</td>
+                      </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+
+
+
+  

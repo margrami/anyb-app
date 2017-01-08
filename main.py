@@ -21,15 +21,20 @@ import random
 import hashlib
 import hmac
 import string
+import json
+import logging
+import time
 
 
 import webapp2
 import jinja2
 
 from google.appengine.ext import db
+from google.appengine.api import urlfetch
 
 
-# commands to call the directory where the files html, js are.
+# Commands to access the directory where the files html, js are.
+
 template_dir = os.path.join(os.path.dirname(__file__))
 jinja_env = jinja2.Environment(loader = jinja2.FileSystemLoader(template_dir),
                               autoescape = True)
@@ -47,121 +52,101 @@ class BaseHandler(webapp2.RequestHandler):
         self.response.out.write(*a, **kw)
 
 
-## funciones 
-letters_dic = {'A':1, 'B':2, 'C':3, 'D':4, 'E':5, 'F':6, 'G':7, 'H':8, 'I':9,
-                   'J':1, 'K':2, 'L':3, 'M':4, 'N':5, 'O':6, 'P':7, 'Q':8, 'R':9,
-                   'S':1, 'T':2, 'U':3, 'V':4, 'W':5, 'X':6, 'Y':7, 'Z':8,
-                   '1':1, '2':2, '3':3, '4':4, '5':5, '6':6, '7':7, '8':8, '9':9, '0':0}
+#### Funciones 
+
+def data_payload(url, obj,  offset, count):
+    return str(str(url) + '/' + str(obj) + '?'+ 'offset='+ str(offset) + '&count=' + str(count))
+
+def connexion_obj_data(url):
+	url1 = data_payload(url, 'adi/data.json', 0, 16)
+	res  = urlfetch.fetch(url1)
+	adi_list = json.loads(res.content) 
+	return {x: adi_list[x] for x in range(0, 16)}
+
+def metadata_request(url, offset, count):
+	url = data_payload(url, 'adi/metadata.json', offset, count)
+	res = urlfetch.fetch(url)
+	return json.loads(res.content)
+
+def info_request(url):
+    ip_OK = False
+    obj = 'module/info.json'
+    url = str(url + '/' + obj)
+    res = urlfetch.fetch(url)
+    if res:
+        ip_OK = True
+    return json.loads(res.content) # no olvidar anadir una verificacion !
 
 
+#### Update section 
 
-'''def format_string(mystring):
-    mystring = mystring.upper()
-    mystring = mystring.replace("'" , "")
-    items = '?!&@$:%+=#.,/-()[]_;~ '
-    for char in items:
-        mystring= mystring.replace(char, "")
-    return  mystring
+def data_payload_update(url, a, b):
+	return str(url + '?' + 'inst='+ a + '&value='  + b)
 
+def request_update_mod(target, instance, value):
+    if len(value) == 1:
+        val = '0' + value + '000000'
+    if len(value) == 2:
+        val =  value + '000000'
+    if len(value) == 7:
+        val = '0' + value
+    if len(value) == 8:
+        val = value
+    url = data_payload_update(target + '/adi/update.json', instance, val)
+    res = urlfetch.fetch(url)
+    return json.loads(res.content)
 
-def format_string_num(mystring):
-    items = '?!&@$:%+=#.,/-()[]_;~ '
-    for char in items:
-        mystring= mystring.replace(char, "")
-    return  mystring
-'''
-
-def format_string(mystring):
-    mystring = mystring.upper()
-    mystring = ''.join(re.findall('[A-Z]+', mystring))
-    return mystring
-
-def format_string_num(mystring):
-    mystring = ''.join(re.findall('[0-9]+', mystring))
-    return mystring
-
-
-def result_text(mylist):
-    numberOfText = []
-    frecuency_dico = {}
-    for i in mylist:
-        numberOfText.append(letters_dic[i])
-    for j in range(1, 10):
-        frecuency_dico[j] = numberOfText.count(j)
-    return frecuency_dico, numberOfText
-
-def suma_digits(lista):
-    suma = sum(lista)
-    new_lista = list(map(int, str(suma)))
-    if len(new_lista) == 1:
-        return new_lista[0]
-    else :
-        return suma_digits(new_lista)   
-
-def result_number(mylist):
-    frecuency_num_dico = {}
-    for j in range(1, 10):
-        frecuency_num_dico[j] = mylist.count(j)
-    return frecuency_num_dico
 
 
 ######  
 
-class Rot13(BaseHandler):
-    def get(self):
-        self.render('rot13-form.html')
-
-    def post(self):
-        rot13 = ''
-        text = self.request.get('text')
-        if text:
-            listaString = list(format_string(text))
-            rot13 = suma_digits(result_text(listaString))
-
-        self.render('rot13-form.html', text = rot13)
-
 
 class MainDisplay(BaseHandler):
+    the_url = ''
     def get(self):
-        self.render('index.html')
+        self.the_url = self.request.get('url')
+        k = info_request(self.the_url)
+        self.render('index2.html', over_outcome = k, dirr = self.the_url )
 
     def post(self):
-        text = self.request.get('name')
-        num = self.request.get('number')
-        try:
-            listaStringName = list(format_string(text))
-            frecuencyName, nameNumbersList = result_text(listaStringName)
-            listaStringNum = list(format_string_num(num))
-            frecuencyNum, numNumbersList = result_text(listaStringNum)
-            resultName = suma_digits(nameNumbersList) 
-            resultNum = suma_digits(numNumbersList)
+        inst = self.request.get('inst')
+        val = self.request.get('val')
+        result_error = request_update_mod(self.request.get('url'), inst, val) # send update request to device, get error
+        k = info_request(self.request.get('url'))
+       
+        # display
+        self.render('index2.html', 
+                     up_outcome = result_error['result'], last_request = 'Instance:' + inst + " " + 'Value:' + val, 
+                     dirr = self.request.get('url'), over_outcome = k)
 
-    	    self.render('welcome.html', sum_name = str(resultName), sum_brnum = str(resultNum),
-                        name_list_num = str(nameNumbersList), frec_num = str(frecuencyName), test_dict = frecuencyName, num_dict = frecuencyNum, name = text, number = num )
-        except:
-            self.render('error.html', name = text, number = num )
+    
+
+class FirstDisplay(BaseHandler):
+    IP_address2 = ''
+    def get(self):
+        self.render('index1.html')
+
+    def post(self):
+        IP = self.request.get('ip')
+        port = self.request.get('port')
+        self.IP_address2 = str('http://' + IP + ':' + port)
+        self.redirect('/update?url=' + self.IP_address2)
 
 
-
-        #self.render('index.html', sum_name = str(resultName), sum_brnum = str(resultNum),
-        #            name_list_num = str(nameNumbersList), frec_num = str(frecuencyName), test_dict = frecuencyName, num_dict = frecuencyNum, name = text, number = num )
-
-        #self.render('index.html', sum_name = str(resultName), sum_brnum = str(resultNum))
-
-
-
-    	#self.redirect('/unit2/welcome?username=' + username)
-    	#self.redirect('/result?name=' + str(result))                                    
 
 class Result(BaseHandler):
     def get(self):
-        name = 'prueba'
-        self.render('welcome.html')
+        list_name = metadata_request('http://192.168.1.102', 0, 16)
+        list_value = connexion_obj_data('http://192.168.1.102')
+        k = {x: [list_name[x]["instance"], list_name[x]["name"], list_name[x]["datatype"],list_name[x]["access"], list_value[x]] for x in range (0, 16)}
+        self.render('resultspage.html', ADI_dict = k)
 
-     
+
+
+
 
 app = webapp2.WSGIApplication([
-	('/rot13', Rot13),
-    ('/', MainDisplay),
-    ('/result', Result)], 
+    ('/', FirstDisplay),
+    ('/result', Result),
+    ('/update', MainDisplay)], 
     debug=True)
