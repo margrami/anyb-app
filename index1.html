@@ -78,7 +78,9 @@ $(document).ready(function(){
 
 <div class="container-fluid">
   <div class="row">
-    <div class="col-sm-3">
+     <div class="col-sm-1"> <!-- experimento -->
+    </div>
+    <div class="col-sm-2">
       <nav class="navbar navbar-default navbar-fixed-side">
         <!-- normal collapsible navbar markup -->
         <h3><i class="glyphicon glyphicon-briefcase"></i> Toolbox</h3>
@@ -137,7 +139,7 @@ $(document).ready(function(){
     </div><!-- /span-3 -->
 
 
-    <div class="col-sm-9"  id="operation_section">
+    <div class="col-sm-8"  id="operation_section">
       	
       <!-- column 2 -->	
        <h3><i class="glyphicon glyphicon-dashboard"></i> Anybus Dashboard</h3>  
@@ -146,14 +148,14 @@ $(document).ready(function(){
       
 	   <div class="row">
             <!-- center left-->	
-         	<div class="col-md-5">
+         	<div class="col-md-4">
 			 
 
          {% block content %}
          {% endblock %}
                 
               
-			</div><!--/col-span-6-->
+			</div><!--/col-span-5-->
      
        </div><!--/row-->
 
@@ -165,27 +167,7 @@ $(document).ready(function(){
 <!-- /Main -->
 
 
-<footer class="text-center">This Bootstrap 3 dashboard layout is compliments of <a href="http://www.bootply.com/85861"><strong>Bootply.com</strong></a>
-</footer>
 
-
-<div class="modal" id="addWidgetModal">
-  <div class="modal-dialog">
-    <div class="modal-content">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-        <h4 class="modal-title">Add Widget</h4>
-      </div>
-      <div class="modal-body">
-        <p>Add a widget stuff here..</p>
-      </div>
-      <div class="modal-footer">
-        <a href="#" class="btn">Close</a>
-        <a href="#" class="btn btn-primary">Save changes</a>
-      </div>
-    </div><!-- /.modal-content -->
-  </div><!-- /.modal-dalog -->
-</div><!-- /.modal -->
 
 
 

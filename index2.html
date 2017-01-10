@@ -11,9 +11,9 @@
                     <dl class="dl-horizontal">
 
                          {% for key, value in over_outcome.iteritems() %}
-                          <dt>{{ key }}  <dd>{{ value }}</dd></dt> 
+                          <dt>{{ key }}</dt> <dd>{{ value }}</dd> 
                          {% endfor %}
-                        
+                    </dl>    
         
 
                   </div><!--/panel-body-->
@@ -49,7 +49,7 @@
           	</div><!--/col-->
          
             <!--center-right-->
-        	<div class="col-md-7">
+        	<div class="col-md-8">
            <div class="panel panel-success">
                   <div class="panel-heading"><h4>ADI Status</h4></div>
                   
@@ -61,6 +61,8 @@
                   </div><!-- table responsible-->
                   </div><!--/panel-body-->
                   
-              </div><!--/panel-->               
+              </div><!--/panel--> 
+        </div><!--/col-span-6-->
+
 
 {% endblock %}

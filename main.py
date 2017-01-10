@@ -51,6 +51,10 @@ class BaseHandler(webapp2.RequestHandler):
     def write(self, *a, **kw):
         self.response.out.write(*a, **kw)
 
+    def set_cookie(self, name, val):
+        self.response.headers.add_header('Set-Cookie',
+                                         '%s=%s; Path=/' % (name, val))
+
 
 #### Funciones 
 
@@ -122,22 +126,24 @@ class MainDisplay(BaseHandler):
     
 
 class FirstDisplay(BaseHandler):
-    IP_address2 = ''
+    URL = ''
     def get(self):
         self.render('index1.html')
 
     def post(self):
         IP = self.request.get('ip')
         port = self.request.get('port')
-        self.IP_address2 = str('http://' + IP + ':' + port)
-        self.redirect('/update?url=' + self.IP_address2)
+        self.URL = str('http://' + IP + ':' + port)
+        self.set_cookie('connex_url', str(self.URL)) #create the cookie
+        self.redirect('/update?url=' + self.URL)
 
 
 
 class Result(BaseHandler):
     def get(self):
-        list_name = metadata_request('http://192.168.1.102', 0, 16)
-        list_value = connexion_obj_data('http://192.168.1.102')
+        cookieValue = self.request.cookies.get('connex_url')
+        list_name = metadata_request(cookieValue, 0, 16)
+        list_value = connexion_obj_data(cookieValue)
         k = {x: [list_name[x]["instance"], list_name[x]["name"], list_name[x]["datatype"],list_name[x]["access"], list_value[x]] for x in range (0, 16)}
         self.render('resultspage.html', ADI_dict = k)
 
